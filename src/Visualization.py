@@ -15,6 +15,7 @@ class Vizualization:
         self.df_accounts = None
         self.df_cards = None
         self.df_saving_accounts = None
+        self.denormalized2 = None
 
 
     def create_historical_table_accounts(self):
@@ -35,7 +36,6 @@ class Vizualization:
                         "phone_number": data_accounts.get("set", {}).get("phone_number", str()),
                         "email": data_accounts.get("set", {}).get("email", str()),
                         "savings_account_id": data_accounts.get("set", {}).get("savings_account_id", str()),
-                        "credit_used": data_accounts.get("set", {}).get("credit_used", str()),
                         "card_id":data_accounts.get("set", {}).get("card_id", str())
                         }
                     }
@@ -52,7 +52,6 @@ class Vizualization:
                         "phone_number": data_accounts.get("data", {}).get("phone_number", str()),
                         "email": data_accounts.get("data", {}).get("email", str()),
                         "savings_account_id": data_accounts.get("data", {}).get("savings_account_id", str()),
-                        "credit_used": data_accounts.get("data", {}).get("credit_used", str()),
                         "card_id":data_accounts.get("data", {}).get("card_id", str())
                         }
                     }
@@ -139,16 +138,22 @@ class Vizualization:
         return string_date
     
     def denormalized_historical_table(self):
-        denormalized1 = pd.merge(self.df_accounts, self.df_cards, how="outer", on=["data.card_id"])
+        denormalized1 = pd.merge(self.df_accounts, self.df_saving_accounts, how="left", on=["data.savings_account_id"])
         denormalized1.loc[denormalized1['op_y'] == 'u', 'ts_x'] = denormalized1.loc[denormalized1['op_y'] == 'u', 'ts_y']
-        denormalized2 = pd.merge(denormalized1, self.df_saving_accounts, how="outer", on=["data.savings_account_id"])
-        denormalized2.loc[denormalized2['op'] == 'u', 'ts_x'] = denormalized2.loc[denormalized2['op'] == 'u', 'ts']
-        denormalized2.to_excel("denormalized2_outer.xlsx")
+        self.denormalized2 = pd.merge(denormalized1, self.df_cards, how="left", on=["data.card_id"])
+        self.denormalized2.loc[self.denormalized2['op'] == 'u', 'ts_x'] = self.denormalized2.loc[self.denormalized2['op'] == 'u', 'ts']
+        print(self.denormalized2)
 
-
-if __name__ == '__main__':  
-    viz = Vizualization()
-    viz.create_historical_table_accounts()
-    viz.create_historical_table_cards()
-    viz.create_historical_table_saving_accounts()
-    viz.denormalized_historical_table()
+    def transaction_analysis(self):
+        print('Number of saving accounts transactions\n')
+        number_of_saving_accounts_transc = self.denormalized2['data.balance'].count()
+        print(number_of_saving_accounts_transc)
+        print('\nNumber of credit cards transactions\n')
+        number_of_credit_cards_transc = self.denormalized2['data.credit_used'].count() - self.denormalized2['data.credit_used'].isin([0]).sum()
+        print(number_of_credit_cards_transc)
+        print('\nSaving accounts history transactions\n')
+        history_transaction_saving_accounts = self.denormalized2.loc[self.denormalized2['data.balance'].notna(), ["data.savings_account_id", "ts_y", "data.balance"]]
+        print(history_transaction_saving_accounts)
+        print('\nCredit cards history transactions\n')
+        history_transaction_cards = self.denormalized2.loc[self.denormalized2['data.credit_used'].notna(), ["data.card_id", "ts", "data.credit_used", "data.monthly_limit", "data.card_number", "data.status_y"]]
+        print(history_transaction_cards)
