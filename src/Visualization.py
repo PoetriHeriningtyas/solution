@@ -9,9 +9,9 @@ pd.set_option('display.max_columns', 30)
 
 class Vizualization:
     def __init__(self):
-        self.file_list_accounts = glob.glob(os.path.join(MAIN_DIR, 'data\\accounts\\','*.json'))
-        self.file_list_cards = glob.glob(os.path.join(MAIN_DIR, 'data\\cards\\','*.json'))
-        self.file_list_saving_accounts = glob.glob(os.path.join(MAIN_DIR, 'data\\savings_accounts\\','*.json'))
+        self.file_list_accounts = glob.glob(os.path.join(MAIN_DIR, 'data/accounts/','*.json'))
+        self.file_list_cards = glob.glob(os.path.join(MAIN_DIR, 'data/cards/','*.json'))
+        self.file_list_saving_accounts = glob.glob(os.path.join(MAIN_DIR, 'data/savings_accounts/','*.json'))
         self.df_accounts = None
         self.df_cards = None
         self.df_saving_accounts = None
