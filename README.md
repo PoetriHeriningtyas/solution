@@ -14,6 +14,7 @@ The repo contains:
 ## Run the code
 - build docker image `docker image build -t dkatalis-solution .`
 - run image with volume mounting `docker run -v <path on host>:<path in container> <image>`. This allows for direct access to the host file system inside of the container and for container processes to write directly to the host file system. For example `docker run -v c:\Users\user\Documents\Github\solution:/solution dkatalis-solution`
+- if you got error, it's probably from the timestamp converter `Visualization.py` line 139. Remove the 1000 division. I applied 1000 division to avoid timestamp error in Windows where I built the solution.
 
 
 ## Solution explanation
