@@ -13,7 +13,7 @@ The repo contains:
 
 ## Run the code
 - build docker image `docker image build -t dkatalis-solution .`
-- run image `docker run dkatalis-solution`
+- run image with volume mounting `docker run -v <path on host>:<path in container> <image>`. This allows for direct access to the host file system inside of the container and for container processes to write directly to the host file system. For example `docker run -v c:\Users\user\Documents\Github\solution:/solution dkatalis-solution`
 
 
 ## Solution explanation
