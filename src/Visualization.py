@@ -56,7 +56,8 @@ class Vizualization:
                         }
                     }
             info_account_hist.append(info_accounts)
-            self.df_accounts = pd.json_normalize(info_account_hist)
+        self.df_accounts = pd.json_normalize(info_account_hist)
+        self.df_accounts.to_excel(os.path.join(MAIN_DIR, 'accounts.xlsx'))
         print(self.df_accounts)
 
     def create_historical_table_cards(self):
@@ -93,7 +94,8 @@ class Vizualization:
                         }
                     }
             info_card_hist.append(info_cards)
-            self.df_cards = pd.json_normalize(info_card_hist)
+        self.df_cards = pd.json_normalize(info_card_hist)
+        self.df_cards.to_excel(os.path.join(MAIN_DIR, 'cards.xlsx'))
         print(self.df_cards)
     
     def create_historical_table_saving_accounts(self):
@@ -128,7 +130,8 @@ class Vizualization:
                         }
                     }
             info_saving_accounts_hist.append(info_saving_accounts)
-            self.df_saving_accounts = pd.json_normalize(info_saving_accounts_hist)
+        self.df_saving_accounts = pd.json_normalize(info_saving_accounts_hist)
+        self.df_saving_accounts.to_excel(os.path.join(MAIN_DIR, 'savinng_accounts.xlsx'))
         print(self.df_saving_accounts)
     
     @staticmethod
@@ -142,6 +145,7 @@ class Vizualization:
         denormalized1.loc[denormalized1['op_y'] == 'u', 'ts_x'] = denormalized1.loc[denormalized1['op_y'] == 'u', 'ts_y']
         self.denormalized2 = pd.merge(denormalized1, self.df_cards, how="left", on=["data.card_id"])
         self.denormalized2.loc[self.denormalized2['op'] == 'u', 'ts_x'] = self.denormalized2.loc[self.denormalized2['op'] == 'u', 'ts']
+        self.denormalized2.to_excel(os.path.join(MAIN_DIR, 'denormalized_left.xlsx'))
         print(self.denormalized2)
 
     def transaction_analysis(self):
@@ -151,9 +155,9 @@ class Vizualization:
         print('\nNumber of credit cards transactions\n')
         number_of_credit_cards_transc = self.denormalized2['data.credit_used'].count() - self.denormalized2['data.credit_used'].isin([0]).sum()
         print(number_of_credit_cards_transc)
-        print('\nSaving accounts history transactions\n')
+        print('\nSaving accounts transactions history\n')
         history_transaction_saving_accounts = self.denormalized2.loc[self.denormalized2['data.balance'].notna(), ["data.savings_account_id", "ts_y", "data.balance"]]
         print(history_transaction_saving_accounts)
-        print('\nCredit cards history transactions\n')
+        print('\nCredit cards transactions history\n')
         history_transaction_cards = self.denormalized2.loc[self.denormalized2['data.credit_used'].notna(), ["data.card_id", "ts", "data.credit_used", "data.monthly_limit", "data.card_number", "data.status_y"]]
         print(history_transaction_cards)
